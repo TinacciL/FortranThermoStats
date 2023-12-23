@@ -1,0 +1,12 @@
+%nproc=4
+%mem=2000MB
+%CHK=water_optimization+frequencies.chk
+#p opt=(verytight) freq rb3lyp/6-31++g(d,p) scrf=(pcm,solvent=water)
+
+water: optimization + frequencies
+
+0 1
+O      -9.443  -5.375  12.707
+H      -8.952  -4.887  12.046
+H      -9.888  -6.064  12.215
+
