@@ -1,4 +1,4 @@
-module parametri
+module parameters
   integer, parameter :: n=1000
   real(8), parameter :: Kb=1.38064E-23, h=6.62607E-34, c=299792458, abserr=1.d-9, R=8.314472, Av=6.022E+23
 
@@ -24,4 +24,4 @@ module parametri
        "Fr ","Ra ","Ac ","Th ","Pa ","U  ","Np ","Pu ","Am ","Cm ","Bk ","Cf ","Es ","Fm ","Md ","No ","Lr ","Rf ", &
        "Db ","Sg ","Bh ","Hs ","Mt ","Ds ","Rg ","Cn ","Nh ","Fl ","Mc ","Lv ","Ts ","Og "/)
 
-end module parametri  
+end module parameters  

@@ -1,9 +1,9 @@
-  program FortranThermoStats
-  use parametri  
-   
-  implicit none 
- 
-  real(8) :: x(n),y(n),z(n), freq(n), theta(n), fvib(n),theta_tot, fp_vib, Ain, Bin, Cin, Iin, &
+program FortranThermoStats
+  use parameters
+
+  implicit none
+
+  real(8) :: x(n), y(n), z(n), freq(n), theta(n), fvib(n), theta_tot, fp_vib, Ain, Bin, Cin, Iin, &
              fp_rot, mass(n), fp_tot, fp_el, fp_nuc, fp_trl,                                   &
              ix, iy, iz, ixz, ixy, iyz, Inerzia(3,3), Inerzia1(3,3), M, bx, by, bz, pi, ht, A, &
              S_tot, S_vib, S_trl, S_rot, G, V, P, E_tot, E_vib, E_trl, E_rot, Cv, Cp, T, mol,  &
@@ -11,38 +11,40 @@
              Cvr
   character(2) :: nome(n)
   integer :: k, i, nato, j, sig, sim, nmv
-
-  !---caso in cui voglia leggere e stampare su file-------------------------------------------
-  !open (unit = 1, file = 'risultati.dat', status = 'replace', action = 'write')
-  !open (unit = 2, file = 'input', status = 'old', action = 'read')  
-  !-------------------------------------------------------------------------------------------
   
+  !---case where reading and printing to file is desired-------------------------------------------
+  open (unit = 1, file = 'risultati.dat', status = 'replace', action = 'write')
+  open (unit = 2, file = 'input.txt', status = 'old', action = 'read')  
+  !-------------------------------------------------------------------------------------------
+
   pi = acos(-1.d0)
   ht =  h/(2.d0*pi) 
-  
-  !---letture dati ingresso-------------------------------------------------------------------
-  read (*,*) !commento input
-  read (*,*) T
-  read (*,*) P
-  read (*,*) V
-  read (*,*) mol
-  read (*,*) nato
-  read (*,*) sim
-  read (*,*) sig
 
+  !---reading input data-------------------------------------------------------------------
+  
+  read (2,*) !comment input
+  read (2,*) T
+  read (2,*) P
+  read (2,*) V
+  read (2,*) mol
+  read (2,*) nato
+  read (2,*) sim
+  read (2,*) sig
+  
   do i=1, nato 
-     read (*,*) nome(i), x(i), y(i), z(i)
+     read (2,*) nome(i), x(i), y(i), z(i)
   enddo
 
    k=0
 
    do 
       k= k+1
-      read(*,*,end=10) freq(k)
+      read(2,*,end=10) freq(k)
    enddo
-  !---fine input-----------------------------------------------------------------------------
+
+  !---end of input-----------------------------------------------------------------------------
    
-  !----associazione vettore nome a vettore masse e calcolo massa molecola M------------------
+  !----associating atom names with mass vector and calculating molecular mass M------------------
 10 do i=1, nato
       do j=1, 118
          if (nome(i) == element(j)) then
@@ -56,7 +58,7 @@
    enddo   
   !-------------------------------------------------------------------------------------------  
    
-  !Parametri sistema da legge gas ideali
+  !Parameters for ideal gas law
   if (P == 0) then
      P = (mol * Av *kb * T) / (V * 101325)
   endif
@@ -66,16 +68,16 @@
   if (mol == 0) then
      mol = (P * V * 101325) / (Av *kb * T)
   endif
-
-  !assegnare modi nomali di vibrazione
+ 
+  !assigning normal vibrational modes
   if (sim == 0) then
      nmv = 3 * nato - 5 
   else if (sim == 1) then
      nmv = 3 * nato - 6
   endif    
   
-  !---------------Inerzia-------------------------------------------------------------- 
-  !calcolo baricentro e cambio sistema riferimento 
+  !---------------Inertia-------------------------------------------------------------- 
+  !calculating center of mass and changing reference frame 
    do i=1, nato
       bx = bx + mass(i)*x(i)/M
       by = by + mass(i)*y(i)/M
@@ -86,7 +88,7 @@
      y(i) = y(i) - bx
      z(i) = z(i) - bx
          
-  !costruzione elementi tensore inerzia e diagonalizzazione
+  !constructing inertia tensor elements and diagonalizing
     do i=1, nato
        ix = ix + mass(i) * ((y(i)**2) + (z(i)**2))
        iy = iy + mass(i) * ((z(i)**2) + (x(i)**2))
@@ -108,16 +110,16 @@
 
     call jacobi (Inerzia, Inerzia1, abserr, 3)
      
-   ! assi principali di inerzia in  kg e metri da uma e amstrong 
+   ! principal axes of inertia in kg and meters from uma and angstrom 
      Ain = Inerzia(1,1) * 1.660539d-47 
      Bin = Inerzia(2,2) * 1.660539d-47 
      Cin = Inerzia(3,3) * 1.660539d-47  
    !---------------------------------------------------------------------------------------------------  
      
-   !---Funzione partizione-----------------------------------------------------------------------------     
-   !NOTA: vib= vibrazionale, trl=traslazionale, el=eletronica, nuc=nucleare,rot= rotazionale  tot=totale
+   !---Partition Function-----------------------------------------------------------------------------     
+   !NOTE: vib= vibrational, trl=translational, el=electronic, nuc=nuclear, rot= rotational  tot=total
 
-   !vibrazionale e temperature vibrazionali
+   !vibrational and vibrational temperatures
    fp_vib = 1.d0
 
    do k=1, nmv 
@@ -127,8 +129,7 @@
       theta_tot = theta_tot + theta(k)
    enddo
   
-     
-   !rotazionale lineare o non 
+   !linear or non-linear rotational
    if (sim == 0) then                                     
       I = Ain + Bin + Cin
       fp_rot = 2 * T * I *kb / (sig * h**2)                                   
@@ -145,12 +146,12 @@
           
 
      fp_tot = fp_vib + fp_rot + fp_el + fp_nuc + fp_trl
-   !----fine funzione partizione-----------------------------------------------------------------------  
+   !----end Partition Function-----------------------------------------------------------------------  
      
-   !----energia in termodinamica classica--------------------------------------------------------------
-   !NOTA: suffisso -j indica  joule/mol, senza kcal/mol
+   !----energy in classical thermodynamics--------------------------------------------------------------
+   !NOTE: suffix -j indicates  joule/mol, without kcal/mol
 
-     !energia rotazionale per molecola lineare o non in joule/mol    
+   !rotational energy for linear or non-linear molecule in joule/mol    
    if (sim == 0) then     
       E_rotj  = (R * T) / mol                                   
    else if (sim == 1) then
@@ -167,7 +168,7 @@
    E_tot   = (E_vib + E_rot + E_trl)               
    !---------------------------------------------------------------------------------------------------   
      
-   !grandezze termodinamiche
+   !thermodynamic quantities
    
     S_vibj = Av * kb * log(fp_vib) + E_vibj / T
     S_vib  = S_vibj * 0.2388459
@@ -178,7 +179,7 @@
     S_tot  = S_vib + S_rot + S_trl
     S_totj = S_vibj + S_rotj + S_trlj     
 
-   !Calcolo Cv 
+   !calculating Cv 
     do i=1, nmv
        Cv = Cv + R * (theta(i) / T)**2.d0 * exp(theta(i) / T ) / ( exp(theta(i) / T) - 1)**2.d0
     enddo
@@ -187,68 +188,65 @@
     Cv  = ( Cv + 1.5d0 * R + Cvr) * 0.2388459
 
 
-    !----Dati in OutPut---------------------------------------------------------------------------------
-    write (*,*) 'Temperatura (K):              ', T
-    write (*,*) 'Volume sistema (m^3):         ', V
-    write (*,*) 'Pressione Sistema (atm):      ', P
-    write (*,*) 'Moli Sistema':                ', mol
-    write (*,*) 'Numero di Atomi:              ', nato
-    write (*,*) 'Numero Modi Normali:          ', k-1
-    write (*,*) 'Assi di Simmetria Molecola:   ', sig
+    !----Output Data---------------------------------------------------------------------------------
+    write (1,*) 'Temperature (K):              ', T
+    write (1,*) 'System Volume (m^3):          ', V
+    write (1,*) 'System Pressure (atm):        ', P
+    write (1,*) 'System Moles:                 ', mol
+    write (1,*) 'Number of Atoms:              ', nato
+    write (1,*) 'Number of Normal Modes:       ', k-1
+    write (1,*) 'Molecule Symmetry Axes:       ', sig
     
     if (sim == 0) then
-       write (*,*) 'Simmetria Molecola:           ', 'Lineare'
+       write (1,*) 'Molecule Symmetry:            ', 'Linear'
     else if (sim == 1) then
-       write (*,*) 'Simmetria Molecola:           ', 'Non Lineare'
+       write (1,*) 'Molecule Symmetry:            ', 'Nonlinear'
     endif
     
     if (k-1 /= nmv) then
-       write (*,*) 'ERROR: numero modi normali vibrazione diverso da frequenze in lettura'
+       write (*,*) 'ERROR: Number of normal vibrational modes different from read frequencies'
        stop
     endif
     
-    write (*,*) '                        Energia (kcal*mol^-1)      Energia (J*mol^-1) '
-    write (*,*) 'Energia Vibrazionale:  ', E_vib,               E_vibj
-    write (*,*) 'Energia Rotazionale:   ', E_rot,               E_rotj
-    write (*,*) 'Energia Traslazionale: ', E_trl,               E_trlj
-    write (*,*) 'Energia Totale Sistema:', E_tot,               E_totj
+    write (1,*) '                        Energy (kcal*mol^-1)      Energy (J*mol^-1) '
+    write (1,*) 'Vibrational Energy:    ', E_vib,               E_vibj
+    write (1,*) 'Rotational Energy:     ', E_rot,               E_rotj
+    write (1,*) 'Translational Energy:  ', E_trl,               E_trlj
+    write (1,*) 'Total System Energy:   ', E_tot,               E_totj
 
    do i=1, nmv
-      write(*,*) 'Frequenza (cm^-1):', freq(i), 'Temperatura Vibrazionale (K):', theta(i)
+      write (1,*) 'Frequency (cm^-1):', freq(i), 'Vibrational Temperature (K):', theta(i)
    enddo
   
    do i=1, nato
-      write (*,*) 'Atomo, Massa (u) e Coordinate (A):', nome(i), mass(i),  x(i), y(i), z(i)
+      write (1,*) 'Atom, Mass (u), and Coordinates (A):', nome(i), mass(i),  x(i), y(i), z(i)
    enddo
   
-    write(*,*) 'Massa Molecola (u):', M     
-    write(*,*) 'Baricentro (A):    '
-    write(*,*)  bx, by, bz    
-    write(*,*) 'Tensore Inerzia (u*A^2):'
-    write(*,*)  Inerzia(1,1), Inerzia(1,2), Inerzia(1,3)
-    write(*,*)  Inerzia(2,1), Inerzia(2,2), Inerzia(2,3)
-    write(*,*)  Inerzia(3,1), Inerzia(3,2), Inerzia(3,3)    
-    write(*,*) 'Assi Principali di Inerzia (Kg*m^2)'
-    Write(*,*)  Ain
-    Write(*,*)  Bin
-    Write(*,*)  Cin
-    write(*,*) 'Funzione Partizione Rotazionale:  ', fp_rot
-    write(*,*) 'Funzione Partizione Vibrazionale: ', fp_vib
-    write(*,*) 'Funzione Partizione Traslazionale:', fp_trl
-    write(*,*) 'Funzione Partizione Elettronica:  ', fp_el
-    write(*,*) 'Funzione Partizione Nucleare:     ', fp_nuc
-    write(*,*) 'Funzione Partizione Totale:       ', fp_tot     
-    write(*,*) '                          Entropia (cal*mol^-1*K^-1) Entropia (J*mol^-1*K^-1)'    
-    write(*,*) 'Entropia Vibrazionale:  ', S_vib,               S_vibj
-    write(*,*) 'Entropia Rotazionale:   ', S_rot,               S_rotj
-    write(*,*) 'Entropia Traslazionale: ', S_trl,               S_trlj
-    write(*,*) 'Entropia Totale Sistema:', S_tot,               S_totj
-    write(*,*) 'Cv:',  Cv
+    write (1,*) 'Molecule Mass (u):', M     
+    write (1,*) 'Center of Mass (A):'
+    write (1,*)  bx, by, bz    
+    write (1,*) 'Inertia Tensor (u*A^2):'
+    write (1,*)  Inerzia(1,1), Inerzia(1,2), Inerzia(1,3)
+    write (1,*)  Inerzia(2,1), Inerzia(2,2), Inerzia(2,3)
+    write (1,*)  Inerzia(3,1), Inerzia(3,2), Inerzia(3,3)    
+    write (1,*) 'Principal Axes of Inertia (Kg*m^2)'
+    Write (1,*)  Ain
+    Write (1,*)  Bin
+    Write (1,*)  Cin
+    write (1,*) 'Rotational Partition Function:  ', fp_rot
+    write (1,*) 'Vibrational Partition Function: ', fp_vib
+    write (1,*) 'Translational Partition Function:', fp_trl
+    write (1,*) 'Electronic Partition Function:  ', fp_el
+    write (1,*) 'Nuclear Partition Function:     ', fp_nuc
+    write (1,*) 'Total Partition Function:       ', fp_tot     
+    write (1,*) '                        Entropy (cal*mol^-1*K^-1) Entropy (J*mol^-1*K^-1)'    
+    write (1,*) 'Vibrational Entropy:  ', S_vib,               S_vibj
+    write (1,*) 'Rotational Entropy:   ', S_rot,               S_rotj
+    write (1,*) 'Translational Entropy: ', S_trl,               S_trlj
+    write (1,*) 'Total System Entropy: ', S_tot,               S_totj
+    write (1,*) 'Cv:',  Cv
     
 end program FortranThermoStats
-
-
-
 
 subroutine Jacobi(a,x,abserr,n)
 !===========================================================
@@ -326,4 +324,3 @@ do while (b2.gt.abserr)
 end do
 return
 end subroutine Jacobi
-  

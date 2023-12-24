@@ -1,0 +1,42 @@
+ Temperature (K):                 298.14999999999998     
+ System Volume (m^3):             2.4464673956375138E-002
+ System Pressure (atm):           1.0000000000000000     
+ System Moles:                    1.0000000000000000     
+ Number of Atoms:                         3
+ Number of Normal Modes:                  3
+ Molecule Symmetry Axes:                  2
+ Molecule Symmetry:            Nonlinear
+                         Energy (kcal*mol^-1)      Energy (J*mol^-1) 
+ Vibrational Energy:      0.59208943241230194        2478.9598859786984     
+ Rotational Energy:       0.88813414861845308        3718.4398289680480     
+ Translational Energy:    0.88813414861845308        3718.4398289680480     
+ Total System Energy:      2.3683577296492082        9915.8395439147953     
+ Frequency (cm^-1):   1605.3938000000001      Vibrational Temperature (K):   2309.8184462625804     
+ Frequency (cm^-1):   3795.5962000000000      Vibrational Temperature (K):   5461.0514363043849     
+ Frequency (cm^-1):   3899.1066999999998      Vibrational Temperature (K):   5609.9809153405331     
+ Atom, Mass (u), and Coordinates (A):O    15.999400138854980        0.0000000000000000        0.0000000000000000       0.11780100000000000     
+ Atom, Mass (u), and Coordinates (A):H    1.0079400539398193        0.0000000000000000       0.76683800000000002      -0.47120299999999998     
+ Atom, Mass (u), and Coordinates (A):H    1.0079400539398193        0.0000000000000000      -0.76683800000000002      -0.47120299999999998     
+ Molecule Mass (u):   18.015280246734619     
+ Center of Mass (A):
+   4.9406564584124654E-324   0.0000000000000000        5.1892425123583344E-002
+ Inertia Tensor (u*A^2):
+   1.8550344994268939        2.1771676815303694E-311   6.9516677317080986E-310
+   2.1771676815303694E-311  0.66961531607158009        0.0000000000000000     
+   6.9516677317080986E-310   0.0000000000000000        1.1854191833553134     
+ Principal Axes of Inertia (Kg*m^2)
+   3.0803571326438347E-047
+   1.1119223473341855E-047
+   1.9684347853096485E-047
+ Rotational Partition Function:     46.348176457714686     
+ Vibrational Partition Function:    1.0004321682018618     
+ Translational Partition Function:   3005442.5258115358     
+ Electronic Partition Function:     1.0000000000000000     
+ Nuclear Partition Function:        1.0000000000000000     
+ Total Partition Function:          3005491.8744201618     
+                         Entropy (cal*mol^-1*K^-1) Entropy (J*mol^-1*K^-1)
+ Vibrational Entropy:     1.9867356139566383        8.3180645614714521     
+ Rotational Entropy:      10.596768153377502        44.366548333623662     
+ Translational Entropy:    32.599120576805859        136.48599627458123     
+ Total System Entropy:    45.182624344139995        189.17060916967634     
+ Cv:   6.0091750165784905     
